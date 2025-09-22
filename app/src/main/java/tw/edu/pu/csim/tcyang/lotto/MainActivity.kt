@@ -71,5 +71,4 @@ fun Play(modifier: Modifier = Modifier) {
     }
 
     Text("吳育安共同編輯程式")
-
 }
