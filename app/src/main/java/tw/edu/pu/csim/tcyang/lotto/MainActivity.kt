@@ -45,50 +45,52 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Play(modifier: Modifier = Modifier) {
-    // Get the current context for showing Toast
     val context = LocalContext.current
 
-    // State to hold the random lucky number
     var lucky by remember {
         mutableStateOf((1..100).random())
     }
 
-    // State to hold the touch position
-    var touchX by remember { mutableStateOf(0f) }
-    var touchY by remember { mutableStateOf(0f) }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .clickable {
-                Toast.makeText(context, "螢幕觸控(馬崇恩)", Toast.LENGTH_SHORT).show()
+    Column (modifier = modifier
+        .fillMaxSize()
+        .pointerInput(Unit) {
+            detectTapGestures { offset ->
+                val x = offset.x.toInt()
+                val y = offset.y.toInt()
+                Toast.makeText(context, "螢幕觸控(馬崇恩) - X: $x, Y: $y", Toast.LENGTH_SHORT).show()
             }
-            .pointerInput(Unit) {
-                // Detect touch events and get the touch position
-                detectTapGestures { offset ->
-                    touchX = offset.x
-                    touchY = offset.y
-                }
-            },
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    ) {
+    ){
         Text(
-            text = "樂透數字(1-100)為 $lucky"
+            text = "樂透數字(1-100)為 $lucky",
+            modifier = Modifier.pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        // 短按：數字減1，但不能小於1
+                        if (lucky > 1) {
+                            lucky -= 1
+                        }
+                        Toast.makeText(context, "短按：數字減1", Toast.LENGTH_SHORT).show()
+                    },
+                    onLongPress = {
+                        // 長按：數字加1，但不能大於100
+                        if (lucky < 100) {
+                            lucky += 1
+                        }
+                        Toast.makeText(context, "長按：數字加1", Toast.LENGTH_SHORT).show()
+                    }
+                )
+            }
         )
 
         Button(
-            onClick = { lucky = (1..100).random() } // Generate a new random number
+            onClick = { lucky = (1..100).random() }
         ) {
             Text("重新產生樂透碼")
         }
 
-        // Display touch coordinates
-        Text(
-            text = "觸控位置: X = ${"%.2f".format(touchX)}, Y = ${"%.2f".format(touchY)}",
-            color = Color.Black
-        )
+        Text("吳育安共同編輯程式")
     }
-
-    Text("吳育安共同編輯程式")
 }
