@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import tw.edu.pu.csim.tcyang.lotto.ui.theme.LottoTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,24 +40,33 @@ fun Play(modifier: Modifier = Modifier) {
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .pointerInput(Unit) {
-                detectTapGestures { offset ->
-                    val x = offset.x.toInt()
-                    val y = offset.y.toInt()
-                    Toast
-                        .makeText(context, "觸控座標: X=$x, Y=$y", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            },
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("樂透數字(1-100)為 $lucky")
+        // Text 可以點擊，短按減1，長按加1
+        Text(
+            text = "樂透數字(1-100)為 $lucky",
+            modifier = Modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            lucky -= 1
+                        },
+                        onLongPress = {
+                            lucky += 1
+                        }
+                    )
+                }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = { lucky = (1..100).random() }) {
             Text("重新產生樂透碼")
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text("吳育安共同編輯程式")
     }
